@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Penggajian Kurir SiCepat</title>
+    <!-- FontAwesome Icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #f4f5f7;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        /* Container Frame Mobile SiCepat */
+        .app-container {
+            width: 100%;
+            max-width: 450px;
+            background-color: #f8f9fa;
+            min-height: 100vh;
+            position: relative;
+            padding-bottom: 70px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        /* Header Merah Lengkung */
+        .app-header {
+            background: linear-gradient(135deg, #e50914, #b20710);
+            color: white;
+            padding: 20px 20px 45px 20px;
+            border-bottom-left-radius: 25px;
+            border-bottom-right-radius: 25px;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .logo-text {
+            font-size: 16px;
+            font-weight: bold;
+            font-style: italic;
+            letter-spacing: 1px;
+        }
+
+        .notification-icon {
+            position: relative;
+            font-size: 18px;
+        }
+
+        .badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: white;
+            color: #e50914;
+            font-size: 10px;
+            font-weight: bold;
+            border-radius: 50%;
+            padding: 2px 5px;
+        }
+
+        .user-greeting p {
+            font-size: 18px;
+            font-weight: 400;
+        }
+
+        .user-greeting h2 {
+            font-size: 20px;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin: 2px 0;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .status-dot {
+            height: 8px;
+            width: 8px;
+            background-color: #2ecc71;
+            border-radius: 50%;
+            display: inline-block;
+            margin-left: 5px;
+        }
+
+        /* Quick Action Grid (Reset Button) */
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            padding: 0 15px;
+            margin-top: -25px;
+        }
+
+        .action-card {
+            background: white;
+            border-radius: 14px;
+            padding: 12px 5px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+            cursor: pointer;
+            border: 1px solid #f0f0f0;
+            transition: transform 0.1s ease;
+        }
+
+        .action-card:active {
+            transform: scale(0.95);
+        }
+
+        .action-card i {
+            font-size: 20px;
+            color: #e50914;
+            margin-bottom: 6px;
+        }
+
+        .action-card span {
+            font-size: 11px;
+            font-weight: bold;
+            color: #333;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        /* Main Area */
+        .main-content {
+            padding: 15px;
+        }
+
+        /* Box Tabel 1-30 */
+        .table-card {
+            background: white;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border: 1px solid #eaeaea;
+        }
+
+        .table-card h3 {
+            font-size: 14px;
+            color: #e50914;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 6px;
+        }
+
+        .table-wrapper {
+            max-height: 320px;
+            overflow-y: auto;
+            border: 1px solid #eee;
+            border-radius: 8px;
+        }
+
+        table.main-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        table.main-table th {
+            background-color: #f8f9fa;
+            color: #333;
+            position: sticky;
+            top: 0;
+            padding: 8px 4px;
+            border-bottom: 2px solid #eee;
+            z-index: 1;
+        }
+
+        table.main-table td {
+            padding: 6px 4px;
+            text-align: center;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        table.main-table input {
+            width: 80%;
+            padding: 4px;
+            font-size: 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        /* Kartu Rincian Hasil Penggajian */
+        .summary-card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border: 1px solid #eaeaea;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px dashed #eee;
+        }
+
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+
+        .summary-label {
+            font-size: 12px;
+            color: #555;
+            font-weight: 600;
+        }
+
+        .summary-value {
+            font-size: 15px;
+            font-weight: 800;
+            color: #111;
+        }
+
+        /* Bottom Nav */
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 55px;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-top: 1px solid #eee;
+        }
+
+        .nav-item {
+            color: #bdc3c7;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .nav-item.active {
+            color: #e50914;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <!-- Header UI SiCepat -->
+    <div class="app-header">
+        <div class="header-top">
+            <div class="logo-text"><i class="fa-solid fa-bolt"></i> SICEPAT EKSPRES</div>
+            <div class="notification-icon">
+                <i class="fa-regular fa-bell"></i>
+                <div class="badge">0</div>
+            </div>
+        </div>
+        <div class="user-greeting">
+            <p>Selamat Datang</p>
+            <h2>RENDY GALANG WIJAYA</h2>
+            <div class="status-badge">Status: ONLINE <span class="status-dot"></span></div>
+        </div>
+    </div>
+
+    <!-- Quick Action Grid -->
+    <div class="action-grid">
+        <div class="action-card" onclick="resetForm()">
+            <i class="fa-solid fa-rotate-right"></i>
+            <span>Reset<br>Data</span>
+        </div>
+        <div class="action-card">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            <span>Checko...</span>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <!-- Tabel Input 1 - 30 -->
+        <div class="table-card">
+            <h3><i class="fa-solid fa-list-check"></i> Input Parsel Harian (Tgl 1-30)</h3>
+            <div class="table-wrapper">
+                <table class="main-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 25%;">Tgl</th>
+                            <th style="width: 40%;">Jumlah Parcel</th>
+                            <th style="width: 35%;">Bonus</th>
+                        </tr>
+                    </thead>
+                    <tbody id="daily-rows"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Section Rincian Dibawah Tabel -->
+        <div class="summary-card">
+            <div class="summary-item">
+                <span class="summary-label"><i class="fa-solid fa-calendar-day" style="color: #e67e22;"></i> Total Gaji Periode 1 (Tgl 1-15)</span>
+                <span class="summary-value" id="out_p1">Rp. 0</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label"><i class="fa-solid fa-calendar-days" style="color: #2980b9;"></i> Total Gaji Periode 2 + Bonus</span>
+                <span class="summary-value" id="out_p2" style="color: #2980b9;">Rp. 0</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label"><i class="fa-solid fa-gift" style="color: #27ae60;"></i> Total Bonus (Tgl 1-30)</span>
+                <span class="summary-value" id="out_total_bonus" style="color: #27ae60;">Rp. 0</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label"><i class="fa-solid fa-boxes-packing" style="color: #8e44ad;"></i> Jumlah Pengantaran (Sebulan)</span>
+                <span class="summary-value" id="out_total_parsel" style="color: #8e44ad;">0 Paket</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Nav -->
+    <div class="bottom-nav">
+        <div class="nav-item active"><i class="fa-solid fa-house"></i></div>
+        <div class="nav-item"><i class="fa-solid fa-user"></i></div>
+    </div>
+</div>
+
+<script>
+    const GAJI_HARIAN = 187000;
+
+    // Generate Baris Tabel Tanggal 1 s/d 30
+    window.onload = function() {
+        const tbody = document.getElementById('daily-rows');
+        let html = '';
+        for (let i = 1; i <= 30; i++) {
+            html += `
+                <tr>
+                    <td><b>${i}</b></td>
+                    <td><input type="number" id="parsel_${i}" min="0" placeholder="0" oninput="hitungGaji()"></td>
+                    <td id="bonus_${i}">Rp. 0</td>
+                </tr>
+            `;
+        }
+        tbody.innerHTML = html;
+    };
+
+    function getBonusRate(parsel) {
+        if (parsel > 109) return 50000;
+        if (parsel > 89) return 35000;
+        if (parsel > 69) return 15000;
+        return 0;
+    }
+
+    function formatRupiah(val) {
+        return 'Rp. ' + Math.round(val).toLocaleString('id-ID');
+    }
+
+    function resetForm() {
+        for (let i = 1; i <= 30; i++) {
+            const input = document.getElementById(`parsel_${i}`);
+            if (input) input.value = '';
+        }
+        hitungGaji();
+    }
+
+    function hitungGaji() {
+        let countP1Filled = 0;
+        let countP2Filled = 0;
+        let totalBonus1To30 = 0;
+        let totalPengantaranSebulan = 0;
+
+        for (let i = 1; i <= 30; i++) {
+            const inputVal = document.getElementById(`parsel_${i}`).value;
+            let bonusHarian = 0;
+
+            if (inputVal !== '' && inputVal !== null) {
+                const parsel = parseInt(inputVal) || 0;
+                bonusHarian = getBonusRate(parsel);
+                
+                totalPengantaranSebulan += parsel;
+                totalBonus1To30 += bonusHarian;
+
+                if (i <= 15) {
+                    countP1Filled++;
+                } else {
+                    countP2Filled++;
+                }
+            }
+
+            // Update Kolom Bonus di Baris Tabel
+            const bonusCell = document.getElementById(`bonus_${i}`);
+            if (bonusCell) bonusCell.innerText = formatRupiah(bonusHarian);
+        }
+
+        // --- RUMUS BARU DENGAN TOTAL BONUS DITAMBAHKAN KE PERIODE 2 ---
+        // Periode 1 (Tgl 1-15): (187.000 x jumlah hari terisi di P1) / 2
+        let gajiPokokP1 = (GAJI_HARIAN * countP1Filled) / 2;
+        let totalGajiP1 = gajiPokokP1;
+
+        // Periode 2 (Tgl 16-30): (187.000 x jumlah hari terisi di P2) + Setengah Gaji P1 + Total Bonus (1-30)
+        let gajiPokokP2 = GAJI_HARIAN * countP2Filled;
+        let totalGajiP2PlusBonus = 0;
+
+        if (countP2Filled > 0 || countP1Filled > 0) {
+            totalGajiP2PlusBonus = gajiPokokP2 + gajiPokokP1 + totalBonus1To30;
+        }
+
+        // Render Hasil Sesuai Instruksi
+        document.getElementById('out_p1').innerText = formatRupiah(totalGajiP1);
+        document.getElementById('out_p2').innerText = formatRupiah(totalGajiP2PlusBonus);
+        document.getElementById('out_total_bonus').innerText = formatRupiah(totalBonus1To30);
+        document.getElementById('out_total_parsel').innerText = totalPengantaranSebulan.toLocaleString('id-ID') + ' Paket';
+    }
+</script>
+
+</body>
+</html>
