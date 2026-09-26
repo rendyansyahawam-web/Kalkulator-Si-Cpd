@@ -1,0 +1,43 @@
+name: Build Android APK
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Setup Java JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Install Cordova & Build APK
+        run: |
+          npm install -g cordova
+          cordova create cordova_app com.kurir.sicepat GajiKurir
+          cd cordova_app
+          rm -rf www/*
+          cp ../index.html www/
+          cp ../config.xml ./
+          cordova platform add android
+          cordova build android --debug
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Gaji-Kurir-APK
+          path: cordova_app/platforms/android/app/build/outputs/apk/debug/app-debug.apk
