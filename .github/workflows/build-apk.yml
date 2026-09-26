@@ -32,6 +32,7 @@ jobs:
           cd cordova_app
           rm -rf www/*
           cp ../index.html www/
+          cp ../logo.png www/ 2>/dev/null || true
           cp ../config.xml ./
           cordova platform add android
           cordova build android --debug
@@ -41,3 +42,4 @@ jobs:
         with:
           name: Gaji-Kurir-APK
           path: cordova_app/platforms/android/app/build/outputs/apk/debug/app-debug.apk
+          
