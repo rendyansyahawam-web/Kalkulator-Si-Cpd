@@ -7,4 +7,7 @@
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
     <preference name="Orientation" value="portrait" />
+
+    <!-- Pengaturan Logo / Icon Utama Aplikasi HP -->
+    <icon src="www/logo.png" />
 </widget>
