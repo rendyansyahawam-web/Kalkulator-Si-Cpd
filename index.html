@@ -78,11 +78,35 @@
             font-weight: 400;
         }
 
+        /* Tampilan Nama yang Bisa Diedit */
         .user-greeting h2 {
             font-size: 20px;
             font-weight: 800;
             text-transform: uppercase;
             margin: 2px 0;
+            outline: none;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.4);
+            display: inline-block;
+            padding-right: 20px;
+            position: relative;
+        }
+
+        .user-greeting h2:focus {
+            border-bottom: 2px solid white;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        .user-greeting h2::after {
+            content: '\f304';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            font-size: 12px;
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0.7;
         }
 
         .status-badge {
@@ -90,6 +114,7 @@
             align-items: center;
             font-size: 13px;
             font-weight: 600;
+            margin-top: 4px;
         }
 
         .status-dot {
@@ -275,8 +300,11 @@
         </div>
         <div class="user-greeting">
             <p>Selamat Datang</p>
-            <h2>RENDY GALANG WIJAYA</h2>
-            <div class="status-badge">Status: ONLINE <span class="status-dot"></span></div>
+            <!-- Nama bisa langsung diklik dan diedit -->
+            <h2 id="user-name" contenteditable="true" oninput="saveUserName()">RENDY GALANG WIJAYA</h2>
+            <div>
+                <div class="status-badge">Status: ONLINE <span class="status-dot"></span></div>
+            </div>
         </div>
     </div>
 
@@ -341,7 +369,7 @@
 <script>
     const GAJI_HARIAN = 187000;
 
-    // Generate Baris Tabel Tanggal 1 s/d 30
+    // Generate Baris Tabel Tanggal 1 s/d 30 & Load Data Terformat Otomatis
     window.onload = function() {
         const tbody = document.getElementById('daily-rows');
         let html = '';
@@ -349,12 +377,13 @@
             html += `
                 <tr>
                     <td><b>${i}</b></td>
-                    <td><input type="number" id="parsel_${i}" min="0" placeholder="0" oninput="hitungGaji()"></td>
+                    <td><input type="number" id="parsel_${i}" min="0" placeholder="0" oninput="onDataInput()"></td>
                     <td id="bonus_${i}">Rp. 0</td>
                 </tr>
             `;
         }
         tbody.innerHTML = html;
+        loadSavedData();
     };
 
     function getBonusRate(parsel) {
@@ -368,12 +397,62 @@
         return 'Rp. ' + Math.round(val).toLocaleString('id-ID');
     }
 
-    function resetForm() {
+    // Pemicu saat user mengisi angka parsel
+    function onDataInput() {
+        hitungGaji();
+        saveData();
+    }
+
+    // Menyimpan data parsel ke LocalStorage
+    function saveData() {
+        const parselData = {};
         for (let i = 1; i <= 30; i++) {
-            const input = document.getElementById(`parsel_${i}`);
-            if (input) input.value = '';
+            const val = document.getElementById(`parsel_${i}`).value;
+            if (val !== '') {
+                parselData[i] = val;
+            }
+        }
+        localStorage.setItem('sicepat_parsel_data', JSON.stringify(parselData));
+    }
+
+    // Menyimpan nama pengguna yang diketik ke LocalStorage
+    function saveUserName() {
+        const nameElement = document.getElementById('user-name');
+        localStorage.setItem('sicepat_user_name', nameElement.innerText);
+    }
+
+    // Memuat data parsel dan nama dari LocalStorage
+    function loadSavedData() {
+        // Load Nama
+        const savedName = localStorage.getItem('sicepat_user_name');
+        if (savedName) {
+            document.getElementById('user-name').innerText = savedName;
+        }
+
+        // Load Parsel
+        const savedData = localStorage.getItem('sicepat_parsel_data');
+        if (savedData) {
+            const parselData = JSON.parse(savedData);
+            for (let i = 1; i <= 30; i++) {
+                if (parselData[i] !== undefined) {
+                    const input = document.getElementById(`parsel_${i}`);
+                    if (input) input.value = parselData[i];
+                }
+            }
         }
         hitungGaji();
+    }
+
+    // Reset Data
+    function resetForm() {
+        if (confirm("Apakah Anda yakin ingin menghapus seluruh data parsel?")) {
+            for (let i = 1; i <= 30; i++) {
+                const input = document.getElementById(`parsel_${i}`);
+                if (input) input.value = '';
+            }
+            localStorage.removeItem('sicepat_parsel_data');
+            hitungGaji();
+        }
     }
 
     function hitungGaji() {
@@ -405,12 +484,10 @@
             if (bonusCell) bonusCell.innerText = formatRupiah(bonusHarian);
         }
 
-        // --- RUMUS BARU DENGAN TOTAL BONUS DITAMBAHKAN KE PERIODE 2 ---
-        // Periode 1 (Tgl 1-15): (187.000 x jumlah hari terisi di P1) / 2
+        // --- RUMUS PENGGAJIAN ---
         let gajiPokokP1 = (GAJI_HARIAN * countP1Filled) / 2;
         let totalGajiP1 = gajiPokokP1;
 
-        // Periode 2 (Tgl 16-30): (187.000 x jumlah hari terisi di P2) + Setengah Gaji P1 + Total Bonus (1-30)
         let gajiPokokP2 = GAJI_HARIAN * countP2Filled;
         let totalGajiP2PlusBonus = 0;
 
@@ -418,7 +495,7 @@
             totalGajiP2PlusBonus = gajiPokokP2 + gajiPokokP1 + totalBonus1To30;
         }
 
-        // Render Hasil Sesuai Instruksi
+        // Render Hasil Sesuai Rincian
         document.getElementById('out_p1').innerText = formatRupiah(totalGajiP1);
         document.getElementById('out_p2').innerText = formatRupiah(totalGajiP2PlusBonus);
         document.getElementById('out_total_bonus').innerText = formatRupiah(totalBonus1To30);
